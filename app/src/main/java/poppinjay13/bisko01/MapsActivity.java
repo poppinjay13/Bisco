@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.*;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -54,7 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.scannerfab);
+git         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.scannerfab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,6 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         });
+        showStations();
     }
     /**
      * Manipulates the map once available.
@@ -148,15 +150,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+        mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(String.format("You are Here")));
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -236,8 +237,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void sendMessage(View view)
-    {
+    private void showStations() {
 
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference stationdRef = rootRef.child("station");
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+
+                    Float latitude = ds.child("Lat").getValue(Float.class);
+                    Float longitude = ds.child("Long").getValue(Float.class);
+
+                    LatLng mlatLng = new LatLng(latitude, longitude);
+                    mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icons8_marker_64))
+                            .position(mlatLng));
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("UserListActivity", "Error occured");
+                // Do something about the error
+            }
+        };
+        stationdRef.addListenerForSingleValueEvent(eventListener);
     }
 }
