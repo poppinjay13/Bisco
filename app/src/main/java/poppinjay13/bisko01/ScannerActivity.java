@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import com.google.zxing.Result;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -19,6 +22,10 @@ public class ScannerActivity extends SwipeActivityClass implements ZXingScannerV
 
     private static final int REQUEST_CAMERA = 1;
     private ZXingScannerView mScannerView;
+    private Toast toast;
+
+    public ScannerActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +38,23 @@ public class ScannerActivity extends SwipeActivityClass implements ZXingScannerV
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentapiVersion >= android.os.Build.VERSION_CODES.M) {
             if (checkPermission()) {
-                Toast.makeText(getApplicationContext(), "Please scan the code on a bike", Toast.LENGTH_LONG).show();
 
+                toast.makeText(getApplicationContext(), "Please scan the code on a bike", Toast.LENGTH_LONG).show();
+                toast.makeText(getApplicationContext(), "Swipe right to go to Map!", Toast.LENGTH_LONG).show();
             } else {
                 requestPermission();
             }
         }
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.scannerfab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//                Intent intent = new Intent(ScannerActivity.this, MapsActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 
     private boolean checkPermission() {
