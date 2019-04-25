@@ -35,7 +35,7 @@ import com.google.firebase.database.*;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -257,5 +257,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
         stationdRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
     }
 }
