@@ -245,9 +245,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Float longitude = ds.child("Long").getValue(Float.class);
 
                     LatLng mlatLng = new LatLng(latitude, longitude);
-                    mMap.addMarker(new MarkerOptions()
+
+                    Marker marker = mMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.icons8_marker_64))
-                            .position(mlatLng));
+                            .position(mlatLng)
+                            .title("Latitude: "+latitude+"Longitude: "+longitude));
+
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            Location myloc = new Location("");
+                            myloc.setLatitude(mLastLocation.getLatitude());
+                            myloc.setLongitude(mLastLocation.getLongitude());
+
+                            Location dock = new Location("");
+                            dock.setLatitude(marker.getPosition().latitude);
+                            dock.setLongitude(marker.getPosition().longitude);
+
+                            float distance = myloc.distanceTo(dock);
+
+                            Toast.makeText(MapsActivity.this,"Distance: "+distance/1000+"km",Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                    });
                 }
             }
             @Override
@@ -261,6 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        return false;
+
+        return true;
     }
 }
