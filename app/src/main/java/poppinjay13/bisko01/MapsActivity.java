@@ -141,7 +141,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+<<<<<<< HEAD
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+=======
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+>>>>>>> eaa0edf199918a24d4103133da2b3148ad9cbb94
 
         //stop location updates
         if (mGoogleApiClient != null) {
