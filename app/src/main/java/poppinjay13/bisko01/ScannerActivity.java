@@ -38,9 +38,7 @@ public class ScannerActivity extends SwipeActivityClass implements ZXingScannerV
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentapiVersion >= android.os.Build.VERSION_CODES.M) {
             if (checkPermission()) {
-
-                toast.makeText(getApplicationContext(), "Please scan the code on a bike", Toast.LENGTH_LONG).show();
-                toast.makeText(getApplicationContext(), "Swipe right to go to Map!", Toast.LENGTH_LONG).show();
+                toast.makeText(getApplicationContext(), "Swipe right to go back to Map!", Toast.LENGTH_LONG).show();
             } else {
                 requestPermission();
             }
@@ -72,7 +70,7 @@ public class ScannerActivity extends SwipeActivityClass implements ZXingScannerV
 
                     boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     if (cameraAccepted) {
-                        Toast.makeText(getApplicationContext(), "Please scan the code on a bike", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Please scan the code on a bike to proceed", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "This service cannot be accessed unless camera permissions are granted", Toast.LENGTH_LONG).show();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -149,8 +147,9 @@ public class ScannerActivity extends SwipeActivityClass implements ZXingScannerV
         builder.setPositiveButton("CONFIRM", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(result));
-                startActivity(browserIntent);
+                Intent mapIntent = new Intent(ScannerActivity.this, MapsActivity.class);
+                startActivity(mapIntent);
+                toast.makeText(getApplicationContext(), "Please Enter your destination", Toast.LENGTH_LONG).show();
                 finish();
             }
         });
