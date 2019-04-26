@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< HEAD
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <fragment
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-=======
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
@@ -22,78 +11,10 @@ android:elevation="0dp">
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
->>>>>>> a538e0593bebe6e259fce8df8b9becb1308e85d3
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-<<<<<<< HEAD
-        tools:context=".MapsActivity" />
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/confirm_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="100dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            android:background="#4682B4"
-            android:paddingLeft="100dp"
-            android:paddingRight="100dp"
-            android:text="@string/confirm"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.494"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linear1"
-            app:layout_constraintVertical_bias="0.939" />
-
-        <LinearLayout
-            android:id="@+id/linear1"
-            android:layout_width="409dp"
-            android:layout_height="121dp"
-            android:background="#4682B4"
-            android:orientation="vertical"
-            android:paddingLeft="50dp"
-            android:paddingTop="20dp"
-            android:paddingRight="50dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="5dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:text="@string/currentLocation"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp" />
-
-            <EditText
-                android:id="@+id/editText2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/destination"
-                android:inputType="textPersonName"
-                android:paddingStart="5dp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF" />
-        </LinearLayout>
-    </android.support.constraint.ConstraintLayout>
-
-</FrameLayout>
-=======
         map:layout_constraintTop_toBottomOf="parent"
         tools:context=".MapsActivity"
         tools:layout_editor_absoluteX="55dp" />
@@ -136,4 +57,3 @@ android:elevation="0dp">
 
 
 </android.support.constraint.ConstraintLayout>
->>>>>>> a538e0593bebe6e259fce8df8b9becb1308e85d3
