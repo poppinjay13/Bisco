@@ -178,6 +178,6 @@ public class ScannerActivity extends SwipeActivityClass implements ZXingScannerV
 
     @Override
     protected void onSwipeRight() {
-        Toast.makeText(getApplicationContext(), "Sike bitch. You thought!", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Sike bitch. You thought!", Toast.LENGTH_LONG).show();
     }
 }
