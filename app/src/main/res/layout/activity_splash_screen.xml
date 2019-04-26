@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="416dp"
-        android:layout_height="734dp"
+        android:layout_width="444dp"
+        android:layout_height="765dp"
         android:src="@mipmap/splash"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
