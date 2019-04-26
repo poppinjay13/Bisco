@@ -30,18 +30,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.*;
+
+import poppinjay13.bisko01.directionshelpers.FetchURL;
+import poppinjay13.bisko01.directionshelpers.TaskLoadedCallback;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener {
+        LocationListener, GoogleMap.OnMarkerClickListener, TaskLoadedCallback {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
+    private Polyline currentPolyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,11 +263,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Location myloc = new Location("");
                             myloc.setLatitude(mLastLocation.getLatitude());
                             myloc.setLongitude(mLastLocation.getLongitude());
+                            LatLng mylocmarker = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
 
                             Location dock = new Location("");
                             dock.setLatitude(marker.getPosition().latitude);
                             dock.setLongitude(marker.getPosition().longitude);
 
+//                            String url = getUrl(mylocmarker, marker.getPosition(),"walking");
+
+                            new FetchURL(MapsActivity.this).execute(getUrl(mylocmarker, marker.getPosition(),"driving"), "driving");
                             float distance = myloc.distanceTo(dock);
 
                             Toast.makeText(MapsActivity.this,"Distance: "+distance/1000+"km",Toast.LENGTH_SHORT).show();
@@ -283,5 +293,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onMarkerClick(Marker marker) {
 
         return true;
+    }
+
+    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // Mode
+        String mode = "mode=" + directionMode;
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // Output format
+        String output = "json";
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
+        return url;
+    }
+
+    @Override
+    public void onTaskDone(Object... values) {
+        if (currentPolyline != null)
+            currentPolyline.remove();
+        currentPolyline = mMap.addPolyline((PolylineOptions) values[0]);
     }
 }
