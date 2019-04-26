@@ -50,7 +50,7 @@ public class Payment extends AppCompatActivity {
             @Override
             public void onResult(@NonNull AccessToken accessToken) {
                 Log.i(Payment.this.getClass().getSimpleName(),accessToken.getAccess_token());
-                Toast.makeText(Payment.this,"TOKEN :"+ accessToken.getAccess_token(),Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(Payment.this,"TOKEN :"+ accessToken.getAccess_token(),Toast.LENGTH_SHORT).show();
             }
 
             @Override
