@@ -8,6 +8,6 @@
     <string name="reset">Enter your email address to recieve a password reset link</string>
     <string name="disclaimer">By creating an account you agree to our Terms of Service and Privacy Policy</string>
     <string name="currentLocation">Current Location</string>
-    <string name ='destination'>Destination</string>
+    <string name='destination'>Destination</string>
     <string name="confirm">Confirm</string>
 </resources>

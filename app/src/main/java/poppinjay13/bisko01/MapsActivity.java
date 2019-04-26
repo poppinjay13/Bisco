@@ -1,17 +1,22 @@
 package poppinjay13.bisko01;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -26,22 +31,40 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.*;
+
+import poppinjay13.bisko01.directionshelpers.FetchURL;
+import poppinjay13.bisko01.directionshelpers.TaskLoadedCallback;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, GoogleMap.OnMarkerClickListener, TaskLoadedCallback {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
+    private Polyline currentPolyline;
+    FloatingActionButton fabz;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        fabz= findViewById(R.id.checkout);
+        fabz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this,Payment.class);
+                startActivity(intent);
+            }
+        });
+
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -50,6 +73,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.scannerfab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                Intent intent = new Intent(MapsActivity.this, ScannerActivity.class);
+                startActivity(intent);
+            }
+
+        });
+        showStations();
     }
     /**
      * Manipulates the map once available.
@@ -133,12 +168,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        Marker mMarker = mMap.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icons8_marker_64))
-                .position(latLng)
-                .title(String.format("You are Here")));
-
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
@@ -219,5 +248,85 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // other 'case' lines to check for other permissions this app might request.
             // You can add here other case statements according to your requirement.
         }
+    }
+
+    private void showStations() {
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference stationdRef = rootRef.child("station");
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+
+                    Float latitude = ds.child("Lat").getValue(Float.class);
+                    Float longitude = ds.child("Long").getValue(Float.class);
+
+                    LatLng mlatLng = new LatLng(latitude, longitude);
+
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icons8_marker_64))
+                            .position(mlatLng)
+                            .title("Dock"));
+
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            Location myloc = new Location("");
+                            myloc.setLatitude(mLastLocation.getLatitude());
+                            myloc.setLongitude(mLastLocation.getLongitude());
+                            LatLng mylocmarker = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+
+                            Location dock = new Location("");
+                            dock.setLatitude(marker.getPosition().latitude);
+                            dock.setLongitude(marker.getPosition().longitude);
+
+//                            String url = getUrl(mylocmarker, marker.getPosition(),"walking");
+
+                            new FetchURL(MapsActivity.this).execute(getUrl(mylocmarker, marker.getPosition(),"driving"), "driving");
+                            float distance = myloc.distanceTo(dock);
+
+                            Toast.makeText(MapsActivity.this,"Distance: "+distance/1000+"km",Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("UserListActivity", "Error occured");
+                // Do something about the error
+            }
+        };
+        stationdRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        return true;
+    }
+
+    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // Mode
+        String mode = "mode=" + directionMode;
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // Output format
+        String output = "json";
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
+        return url;
+    }
+
+    @Override
+    public void onTaskDone(Object... values) {
+        if (currentPolyline != null)
+            currentPolyline.remove();
+        currentPolyline = mMap.addPolyline((PolylineOptions) values[0]);
     }
 }
